@@ -16,9 +16,9 @@ class AuthService {
         apiClient.setAuthToken(response.data.token)
 
         // Start tracking session
-        await trackingService.startSession()
+        //await trackingService.startSession()
 
-        toastService.success("Welcome back!", `Hello ${response.data.user.firstName}`)
+        toastService.success("Welcome back!", `Hello ${response.data.user.name}`)
         return response.data
       }
 
@@ -50,8 +50,8 @@ class AuthService {
 
   async logout(): Promise<void> {
     try {
-      await trackingService.endSession()
-      await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT)
+     // await trackingService.endSession()
+      //await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT)
 
       this.currentUser = null
       apiClient.removeAuthToken()

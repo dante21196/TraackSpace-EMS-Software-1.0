@@ -1,11 +1,11 @@
 export const API_ENDPOINTS = {
   // Authentication
   AUTH: {
-    LOGIN: "/auth/login",
-    LOGOUT: "/auth/logout",
-    REFRESH: "/auth/refresh",
-    VERIFY_TOKEN: "/auth/verify-token",
-    RESET_PASSWORD: "/auth/reset-password",
+    LOGIN: "/users/login",
+    LOGOUT: "/users/logout",
+    REFRESH: "/users/refresh",
+    VERIFY_TOKEN: "/users/verify-token",
+    RESET_PASSWORD: "/users/reset-password",
   },
 
   // Super Admin

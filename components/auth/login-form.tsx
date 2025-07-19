@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
+import { authService } from "@/src/services/auth/auth.service"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
@@ -16,13 +17,30 @@ export function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-    // Simulate login
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setIsLoading(false)
-    // Redirect to dashboard
-    window.location.href = "/dashboard"
+   try {
+        setIsLoading(true)
+       const response =  await authService.login({ email, password })
+         // Refresh companies list
+        // const companiesData = await adminService.getCompanies(1, 50)
+        // setCompanies(companiesData.companies)
+        if (response) {
+          if(response.user.role_id === 0) {
+          window.location.href = "/admin/dashboard"
+        } else if(response.user.role_id === 1) {
+          window.location.href = "/company/dashboard"
+        } else  if(response.user.role_id === 2) 
+          window.location.href = "/dashboard"
+        setIsLoading(false)
+    }
+      } catch (error) {
+        console.error("Failed to login:", error)
+        setIsLoading(false)
+      }
   }
+
+   const handleInviteCompany = async (data: any) => {
+      
+    }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">

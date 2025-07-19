@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { authService } from "@/src/services/auth/auth.service"
 
 const navigationItems = [
   { icon: LayoutDashboard, label: "Dashboard", isActive: true },
@@ -23,7 +24,11 @@ const navigationItems = [
   { icon: Bell, label: "Notifications" },
   { icon: Shield, label: "Security" },
 ]
+const signOut = async()=>{
+  await authService.logout()
+  window.location.href = '/'
 
+}
 export function Sidebar() {
   return (
     <div className="w-64 h-screen bg-white border-r flex flex-col">
@@ -71,7 +76,7 @@ export function Sidebar() {
         </Card>
 
         {/* Logout */}
-        <Button variant="ghost" className="w-full justify-start text-red-600 hover:bg-red-50 mt-3">
+        <Button variant="ghost" onClick={signOut} className="w-full justify-start text-red-600 hover:bg-red-50 mt-3">
           <LogOut className="mr-3 h-4 w-4" />
           <span className="text-sm">Sign Out</span>
         </Button>

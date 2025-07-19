@@ -13,20 +13,13 @@ export interface RegisterData {
 }
 
 export interface User {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  username: string
-  avatar?: string
-  bio?: string
-  location?: string
-  website?: string
-  isOnline: boolean
-  lastSeenAt: string
-  createdAt: string
-  settings: UserSettings
-  stats: UserStats
+    company_id?: string; // Optional field for company reference
+  name: string;
+  email: string;
+  password: string;
+  role_id: number;
+  isActive: boolean;
+  createdAt: Date;
 }
 
 export interface UserSettings {
@@ -58,6 +51,6 @@ export interface UserStats {
 export interface AuthResponse {
   user: User
   token: string
-  refreshToken: string
-  expiresAt: string
+  //refreshToken: string
+  //expiresAt: string
 }
