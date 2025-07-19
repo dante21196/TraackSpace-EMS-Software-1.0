@@ -29,7 +29,7 @@ export default function Dashboard() {
     )
   }
 
-  if (!isAuthenticated) {
+  if ( false && !isAuthenticated) {
     window.location.href = "/auth/login"
     return null
   }

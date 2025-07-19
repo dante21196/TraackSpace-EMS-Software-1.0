@@ -25,7 +25,9 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    loadDashboardData()
+   // loadDashboardData()
+         setIsLoading(false)
+
   }, [])
 
   const loadDashboardData = async () => {
@@ -46,12 +48,16 @@ export default function AdminDashboard() {
 
   const handleInviteCompany = async (data: any) => {
     try {
-      await adminService.inviteCompany(data)
-      // Refresh companies list
-      const companiesData = await adminService.getCompanies(1, 50)
-      setCompanies(companiesData.companies)
+      setIsLoading(true)
+     const response =  await adminService.inviteCompany(data)
+       // Refresh companies list
+      // const companiesData = await adminService.getCompanies(1, 50)
+      // setCompanies(companiesData.companies)
+      setIsLoading(false)
     } catch (error) {
       console.error("Failed to invite company:", error)
+
+      setIsLoading(false)
     }
   }
 
