@@ -27,49 +27,58 @@ export function ToastContainer() {
   }
 
   const getToastIcon = (type: string) => {
+    const common = "w-5 h-5"
     switch (type) {
       case "success":
-        return <CheckCircle className="h-5 w-5 text-green-600" />
+        return <CheckCircle className={`${common} text-green-600`} />
       case "error":
-        return <XCircle className="h-5 w-5 text-red-600" />
+        return <XCircle className={`${common} text-red-600`} />
       case "warning":
-        return <AlertTriangle className="h-5 w-5 text-yellow-600" />
+        return <AlertTriangle className={`${common} text-yellow-600`} />
       case "info":
-        return <Info className="h-5 w-5 text-blue-600" />
+        return <Info className={`${common} text-blue-600`} />
+      default:
+        return null
     }
   }
 
   const getToastStyles = (type: string) => {
     switch (type) {
       case "success":
-        return "border-green-200 bg-green-50"
+        return "border-green-300 bg-green-50"
       case "error":
-        return "border-red-200 bg-red-50"
+        return "border-red-300 bg-red-50"
       case "warning":
-        return "border-yellow-200 bg-yellow-50"
+        return "border-yellow-300 bg-yellow-50"
       case "info":
-        return "border-blue-200 bg-blue-50"
+        return "border-blue-300 bg-blue-50"
+      default:
+        return "border-gray-300 bg-white"
     }
   }
 
   if (toasts.length === 0) return null
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
+    <div className="fixed top-6 right-6 z-50 space-y-4 max-w-sm w-full">
       {toasts.map((toast) => (
-        <div key={toast.id} className={`max-w-sm w-full border rounded-lg p-4 shadow-lg ${getToastStyles(toast.type)}`}>
-          <div className="flex items-start">
-            <div className="flex-shrink-0">{getToastIcon(toast.type)}</div>
-            <div className="ml-3 w-0 flex-1">
-              <p className="text-sm font-medium text-gray-900">{toast.title}</p>
-              <p className="mt-1 text-sm text-gray-600">{toast.message}</p>
-            </div>
-            <div className="ml-4 flex-shrink-0 flex">
-              <Button variant="ghost" size="sm" onClick={() => removeToast(toast.id)} className="p-1 h-auto">
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+        <div
+          key={toast.id}
+          className={`flex items-start border rounded-xl p-4 shadow-md transition-all duration-300 ${getToastStyles(toast.type)}`}
+        >
+          <div className="mr-3 mt-0.5">{getToastIcon(toast.type)}</div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-gray-900">{toast.title}</p>
+            <p className="text-sm text-gray-700 mt-1 break-words">{toast.message}</p>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => removeToast(toast.id)}
+            className="ml-3 p-1 h-auto text-gray-500 hover:text-black"
+          >
+            <X className="w-4 h-4" />
+          </Button>
         </div>
       ))}
     </div>
