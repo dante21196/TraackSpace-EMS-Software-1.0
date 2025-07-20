@@ -1,110 +1,160 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { CompanySidebar } from "../../../components/layout/company-sidebar"
-import { Header } from "../../../components/layout/header"
-import { TeamManagement } from "../../../components/company/team-management"
-import { InviteUserDialog } from "../../../components/company/invite-user-dialog"
-import { companyService } from "../../../src/services/company/company.service"
-import { projectsService } from "../../../src/services/projects/projects.service"
-import type { User, Project } from "../../../src/types/global"
+import { AdminSidebar } from "@/components/layout/admin-sidebar"
+import { Header } from "@/components/layout/header"
+import { Card, CardContent } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts"
+import { Users, Building2, DollarSign } from "lucide-react"
+import { useState } from "react"
+import { CompanySidebar } from "@/components/layout/company-sidebar"
 
-export default function CompanyDashboard() {
-  const [users, setUsers] = useState<User[]>([])
-  const [projects, setProjects] = useState<Project[]>([])
-  const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+const summaryData = [
+  { title: "Total Users", value: "1,520", icon: Users },
+  { title: "Companies", value: "120", icon: Building2 },
+  { title: "Monthly Revenue", value: "₹5,30,000", icon: DollarSign },
+]
 
-  useEffect(() => {
-    loadDashboardData()
-  }, [])
+const barChartData = [
+  { month: "Jan", users: 200 },
+  { month: "Feb", users: 400 },
+  { month: "Mar", users: 350 },
+  { month: "Apr", users: 500 },
+  { month: "May", users: 420 },
+  { month: "Jun", users: 600 },
+]
 
-  const loadDashboardData = async () => {
-    try {
-      const [usersData, projectsData] = await Promise.all([
-        companyService.getUsers(1, 50),
-        projectsService.getProjects({ limit: 50 }),
-      ])
+const activityLog = [
+  { id: 1, activity: "New user registered: Ravi Kumar", timestamp: "5 mins ago" },
+  { id: 2, activity: "Company onboarded: Finverse Inc.", timestamp: "20 mins ago" },
+  { id: 3, activity: "Billing issued to Zentech", timestamp: "1 hour ago" },
+  { id: 4, activity: "User updated profile: Neha Roy", timestamp: "2 hours ago" },
+]
 
-      setUsers(usersData.users)
-      setProjects(projectsData.projects)
-    } catch (error) {
-      console.error("Failed to load dashboard data:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+const members = [
+  { name: "Ravi Kumar", email: "ravi@example.com", role: "Admin" },
+  { name: "Neha Roy", email: "neha@example.com", role: "Editor" },
+  { name: "Zoya Ali", email: "zoya@example.com", role: "Viewer" },
+]
 
-  const handleInviteUser = async (data: any) => {
-    try {
-      await companyService.inviteUser(data)
-      // Refresh users list
-      const usersData = await companyService.getUsers(1, 50)
-      setUsers(usersData.users)
-    } catch (error) {
-      console.error("Failed to invite user:", error)
-    }
-  }
+export default function DashboardPage() {
+  const [inviteEmail, setInviteEmail] = useState("")
 
-  const handleEditUser = (user: User) => {
-    // TODO: Open edit user dialog
-    console.log("Edit user:", user)
-  }
-
-  const handleDeactivateUser = async (user: User) => {
-    if (confirm(`Are you sure you want to deactivate ${user.firstName} ${user.lastName}?`)) {
-      try {
-        await companyService.deactivateUser(user.id)
-        setUsers(users.map((u) => (u.id === user.id ? { ...u, isActive: false } : u)))
-      } catch (error) {
-        console.error("Failed to deactivate user:", error)
-      }
-    }
-  }
-
-  const handleViewTimeTracking = (user: User) => {
-    // TODO: Navigate to time tracking view for user
-    console.log("View time tracking for:", user)
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
-        </div>
-      </div>
-    )
+  const handleInvite = () => {
+    if (!inviteEmail) return
+    alert(`Invite sent to ${inviteEmail}`)
+    setInviteEmail("")
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex min-h-screen">
       <CompanySidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex flex-col flex-1">
         <Header />
-        <main className="flex-1 overflow-auto p-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Team Dashboard</h1>
-            <p className="text-gray-600">Manage your team members and track their productivity</p>
+        <main className="p-6 space-y-6">
+          {/* Title */}
+          <div>
+            <h2 className="text-2xl font-semibold">Admin Dashboard</h2>
+            <p className="text-sm text-muted-foreground">Overview of platform, members, and metrics.</p>
           </div>
 
-          <TeamManagement
-            users={users}
-            onInviteUser={() => setInviteDialogOpen(true)}
-            onEditUser={handleEditUser}
-            onDeactivateUser={handleDeactivateUser}
-            onViewTimeTracking={handleViewTimeTracking}
-          />
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {summaryData.map((item, index) => (
+              <Card key={index}>
+                <CardContent className="flex items-center justify-between p-6">
+                  <div>
+                    <p className="text-sm text-muted-foreground">{item.title}</p>
+                    <p className="text-xl font-bold">{item.value}</p>
+                  </div>
+                  <item.icon className="w-6 h-6 text-muted-foreground" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Chart + Activity Log */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Users Growth Chart */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold mb-4">User Growth</h3>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={barChartData}>
+                    <XAxis dataKey="month" stroke="#888888" fontSize={12} />
+                    <YAxis stroke="#888888" fontSize={12} />
+                    <Tooltip />
+                    <Bar dataKey="users" fill="#4f46e5" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Activity Log */}
+            <Card>
+              <CardContent className="p-6 space-y-4">
+                <h3 className="text-lg font-semibold">Recent Activity</h3>
+                <ul className="space-y-2">
+                  {activityLog.map((log) => (
+                    <li key={log.id} className="text-sm border-b py-2">
+                      <p>{log.activity}</p>
+                      <span className="text-xs text-muted-foreground">{log.timestamp}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Member List */}
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Team Members</h3>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Role</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {members.map((member, i) => (
+                    <TableRow key={i}>
+                      <TableCell>{member.name}</TableCell>
+                      <TableCell>{member.email}</TableCell>
+                      <TableCell>{member.role}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          {/* Invite Form */}
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Invite Team Member</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+                <div>
+                  <Label htmlFor="invite-email">Email</Label>
+                  <Input
+                    id="invite-email"
+                    type="email"
+                    placeholder="Enter email"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                  />
+                </div>
+                <Button onClick={handleInvite}>Send Invite</Button>
+              </div>
+            </CardContent>
+          </Card>
         </main>
       </div>
-
-      <InviteUserDialog
-        open={inviteDialogOpen}
-        onOpenChange={setInviteDialogOpen}
-        onInvite={handleInviteUser}
-        projects={projects}
-      />
     </div>
   )
 }

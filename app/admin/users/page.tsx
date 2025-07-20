@@ -3,83 +3,69 @@
 import { useState, useEffect } from "react"
 import { AdminSidebar } from "../../../components/layout/admin-sidebar"
 import { Header } from "../../../components/layout/header"
-import { AdminDashboardStats } from "../../../components/admin/dashboard-stats"
-import { CompaniesTable } from "../../../components/admin/companies-table"
-import { InviteCompanyDialog } from "../../../components/admin/invite-company-dialog"
 import { adminService } from "../../../src/services/admin/admin.service"
-import type { Company } from "../../../src/types/global"
+import type { User } from "../../../src/types/global"
 
-export default function AdminDashboard() {
-  const [stats, setStats] = useState({
-    totalCompanies: 0,
-    activeCompanies: 0,
-    totalUsers: 0,
-    activeUsers: 0,
-    totalRevenue: 0,
-    monthlyRevenue: 0,
-    trialCompanies: 0,
-    churnRate: 0,
-  })
-  const [companies, setCompanies] = useState<Company[]>([])
-  const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
+export default function AdminUsersPage() {
+  const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-   // loadDashboardData()
-         setIsLoading(false)
+    //loadUsers()
+
+  setTimeout(() => {
+    const mockUsers: User[] = [
+      {
+        id: "1",
+        name: "Alice Johnson",
+        email: "alice.johnson@example.com",
+        role_id: 1,
+      },
+      {
+        id: "2",
+        name: "Bob Smith",
+        email: "bob.smith@example.com",
+        role_id: 2,
+      },
+      {
+        id: "3",
+        name: "Charlie Brown",
+        email: "charlie.brown@example.com",
+        role_id: 3,
+      },
+      {
+        id: "4",
+        name: "Diana Prince",
+        email: "diana.prince@example.com",
+        role_id: 2,
+      },
+    ]
+    setUsers(mockUsers)
+    setIsLoading(false)
+  }, 800) // Simulate network delay
 
   }, [])
 
-  const loadDashboardData = async () => {
+  const loadUsers = async () => {
     try {
-      const [dashboardStats, companiesData] = await Promise.all([
-        adminService.getDashboardStats(),
-        adminService.getCompanies(1, 50),
-      ])
-
-      setStats(dashboardStats)
-      setCompanies(companiesData.companies)
+      // const res = await adminService.getUsers(1, 50)
+      // setUsers(res.users)
     } catch (error) {
-      console.error("Failed to load dashboard data:", error)
+      console.error("Failed to load users:", error)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleInviteCompany = async (data: any) => {
-    try {
-      setIsLoading(true)
-     const response =  await adminService.inviteCompany(data)
-       // Refresh companies list
-      // const companiesData = await adminService.getCompanies(1, 50)
-      // setCompanies(companiesData.companies)
-      setIsLoading(false)
-    } catch (error) {
-      console.error("Failed to invite company:", error)
-
-      setIsLoading(false)
-    }
-  }
-
-  const handleEditCompany = (company: Company) => {
-    // TODO: Open edit company dialog
-    console.log("Edit company:", company)
-  }
-
-  const handleDeleteCompany = async (company: Company) => {
-    if (confirm(`Are you sure you want to delete ${company.name}?`)) {
+  const handleDeleteUser = async (user: User) => {
+    if (confirm(`Delete user ${user.name} (${user.email})?`)) {
       try {
-        await adminService.deleteCompany(company.id)
-        setCompanies(companies.filter((c) => c.id !== company.id))
-      } catch (error) {
-        console.error("Failed to delete company:", error)
+        await adminService.deleteUser(user.id)
+        setUsers(users.filter((u) => u.id !== user.id))
+      } catch (err) {
+        console.error("Failed to delete user:", err)
       }
     }
-  }
-
-  const handleManageLimits = (company: Company) => {
-    // TODO: Open manage limits dialog
-    console.log("Manage limits for:", company)
   }
 
   if (isLoading) {
@@ -101,24 +87,43 @@ export default function AdminDashboard() {
         <main className="flex-1 overflow-auto p-6">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Users</h1>
-            <p className="text-gray-600">Manage users and platform settings</p>
+            <p className="text-gray-600">View and manage all users in the system</p>
           </div>
 
-          <AdminDashboardStats stats={stats} />
-
-          <div className="grid grid-cols-1 gap-6">
-            <CompaniesTable
-              companies={companies}
-              onInviteCompany={() => setInviteDialogOpen(true)}
-              onEditCompany={handleEditCompany}
-              onDeleteCompany={handleDeleteCompany}
-              onManageLimits={handleManageLimits}
-            />
+          <div className="bg-white shadow rounded-lg overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {users.map((user) => (
+                  <tr key={user.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.role_id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button
+                        className="text-red-600 hover:text-red-900"
+                        onClick={() => handleDeleteUser(user)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {users.length === 0 && (
+              <div className="p-6 text-center text-gray-500">No users found.</div>
+            )}
           </div>
         </main>
       </div>
-
-      <InviteCompanyDialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen} onInvite={handleInviteCompany} />
     </div>
   )
 }

@@ -1,17 +1,14 @@
 export interface User {
   id: string
   email: string
-  firstName: string
-  lastName: string
-  avatar?: string
-  role: UserRole
-  companyId?: string
-  company?: Company
-  isActive: boolean
+  name: string
+  role_id: number
+  company_id ?: string
+  isActive ?: boolean
   lastLoginAt?: string
-  createdAt: string
-  updatedAt: string
-  permissions: Permission[]
+  createdAt?: string
+  updatedAt?: string
+  permissions?: Permission[]
 }
 
 export enum UserRole {

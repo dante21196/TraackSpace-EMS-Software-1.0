@@ -1,110 +1,97 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { CompanySidebar } from "../../../components/layout/company-sidebar"
-import { Header } from "../../../components/layout/header"
-import { TeamManagement } from "../../../components/company/team-management"
-import { InviteUserDialog } from "../../../components/company/invite-user-dialog"
-import { companyService } from "../../../src/services/company/company.service"
-import { projectsService } from "../../../src/services/projects/projects.service"
-import type { User, Project } from "../../../src/types/global"
+import { useState } from "react"
+import { CompanySidebar } from "@/components/layout/company-sidebar"
+import { Header } from "@/components/layout/header"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Input } from "@/components/ui/input"
+import { PlusCircle } from "lucide-react"
 
-export default function CompanyDashboard() {
-  const [users, setUsers] = useState<User[]>([])
-  const [projects, setProjects] = useState<Project[]>([])
-  const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+type TeamMember = {
+  id: number
+  name: string
+  email: string
+  role: string
+  status: "Active" | "Inactive"
+}
 
-  useEffect(() => {
-    loadDashboardData()
-  }, [])
+const mockTeam: TeamMember[] = [
+  { id: 1, name: "Alice Sharma", email: "alice@example.com", role: "Project Manager", status: "Active" },
+  { id: 2, name: "Ravi Singh", email: "ravi@example.com", role: "Frontend Developer", status: "Active" },
+  { id: 3, name: "Meera Das", email: "meera@example.com", role: "Backend Developer", status: "Inactive" },
+  { id: 4, name: "John Paul", email: "john@example.com", role: "QA Engineer", status: "Active" },
+]
 
-  const loadDashboardData = async () => {
-    try {
-      const [usersData, projectsData] = await Promise.all([
-        companyService.getUsers(1, 50),
-        projectsService.getProjects({ limit: 50 }),
-      ])
+export default function TeamPage() {
+  const [team, setTeam] = useState(mockTeam)
+  const [search, setSearch] = useState("")
 
-      setUsers(usersData.users)
-      setProjects(projectsData.projects)
-    } catch (error) {
-      console.error("Failed to load dashboard data:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleInviteUser = async (data: any) => {
-    try {
-      await companyService.inviteUser(data)
-      // Refresh users list
-      const usersData = await companyService.getUsers(1, 50)
-      setUsers(usersData.users)
-    } catch (error) {
-      console.error("Failed to invite user:", error)
-    }
-  }
-
-  const handleEditUser = (user: User) => {
-    // TODO: Open edit user dialog
-    console.log("Edit user:", user)
-  }
-
-  const handleDeactivateUser = async (user: User) => {
-    if (confirm(`Are you sure you want to deactivate ${user.firstName} ${user.lastName}?`)) {
-      try {
-        await companyService.deactivateUser(user.id)
-        setUsers(users.map((u) => (u.id === user.id ? { ...u, isActive: false } : u)))
-      } catch (error) {
-        console.error("Failed to deactivate user:", error)
-      }
-    }
-  }
-
-  const handleViewTimeTracking = (user: User) => {
-    // TODO: Navigate to time tracking view for user
-    console.log("View time tracking for:", user)
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
-        </div>
-      </div>
-    )
-  }
+  const filteredTeam = team.filter((member) =>
+    member.name.toLowerCase().includes(search.toLowerCase()) ||
+    member.email.toLowerCase().includes(search.toLowerCase())
+  )
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex min-h-screen">
       <CompanySidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex flex-col flex-1">
         <Header />
-        <main className="flex-1 overflow-auto p-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Team Dashboard</h1>
-            <p className="text-gray-600">Manage your team members and track their productivity</p>
+        <main className="p-6 space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold">Team Members</h2>
+              <p className="text-muted-foreground text-sm">Manage your company’s team access and roles.</p>
+            </div>
+            <Button>
+              <PlusCircle className="w-4 h-4 mr-2" />
+              Invite Member
+            </Button>
           </div>
 
-          <TeamManagement
-            users={users}
-            onInviteUser={() => setInviteDialogOpen(true)}
-            onEditUser={handleEditUser}
-            onDeactivateUser={handleDeactivateUser}
-            onViewTimeTracking={handleViewTimeTracking}
-          />
+          <Card>
+            <CardContent className="p-4 space-y-4">
+              <Input
+                placeholder="Search team members..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full sm:w-1/2"
+              />
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredTeam.map((member) => (
+                    <TableRow key={member.id}>
+                      <TableCell>{member.name}</TableCell>
+                      <TableCell>{member.email}</TableCell>
+                      <TableCell>{member.role}</TableCell>
+                      <TableCell>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            member.status === "Active"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {member.status}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </main>
       </div>
-
-      <InviteUserDialog
-        open={inviteDialogOpen}
-        onOpenChange={setInviteDialogOpen}
-        onInvite={handleInviteUser}
-        projects={projects}
-      />
     </div>
   )
 }
