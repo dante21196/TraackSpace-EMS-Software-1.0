@@ -29,7 +29,7 @@ export function LoginForm() {
         } else if(response.user.role_id === 1) {
           window.location.href = "/company/dashboard"
         } else  if(response.user.role_id === 2) 
-          window.location.href = "/dashboard"
+          window.location.href = "/users/dashboard"
         setIsLoading(false)
     }
       } catch (error) {

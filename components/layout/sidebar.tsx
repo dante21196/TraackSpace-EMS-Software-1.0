@@ -1,3 +1,5 @@
+"use client"
+
 import {
   LayoutDashboard,
   CheckSquare,
@@ -13,23 +15,28 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { useRouter, usePathname } from "next/navigation"
 import { authService } from "@/src/services/auth/auth.service"
 
 const navigationItems = [
-  { icon: LayoutDashboard, label: "Dashboard", isActive: true },
-  { icon: CheckSquare, label: "Tasks" },
-  { icon: Users, label: "Connections" },
-  { icon: MessageCircle, label: "Chat" },
-  { icon: Building2, label: "Workspaces" },
-  { icon: Bell, label: "Notifications" },
-  { icon: Shield, label: "Security" },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/users/dashboard" },
+  { icon: CheckSquare, label: "Tasks", href: "/users/tasks" },
+  { icon: Users, label: "Connections", href: "/users/connections" },
+  { icon: MessageCircle, label: "Chat", href: "/users/chat" },
+  { icon: Building2, label: "Workspaces", href: "/users/workspaces" },
+  { icon: Bell, label: "Notifications", href: "/users/notifications" },
+  { icon: Shield, label: "Security", href: "/users/security" },
 ]
-const signOut = async()=>{
-  await authService.logout()
-  window.location.href = '/'
 
+const signOut = async () => {
+  await authService.logout()
+  window.location.href = "/"
 }
+
 export function Sidebar() {
+  const router = useRouter()
+  const pathname = usePathname()
+
   return (
     <div className="w-64 h-screen bg-white border-r flex flex-col">
       {/* Logo */}
@@ -44,32 +51,37 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
-        {navigationItems.map((item, index) => (
-          <Button
-            key={index}
-            variant={item.isActive ? "secondary" : "ghost"}
-            className={`w-full justify-start ${
-              item.isActive ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
-            }`}
-          >
-            <item.icon className="mr-3 h-4 w-4" />
-            <span className="text-sm">{item.label}</span>
-          </Button>
-        ))}
+        {navigationItems.map((item, index) => {
+          const isActive = pathname === item.href
+          return (
+            <Button
+              key={index}
+              variant={isActive ? "secondary" : "ghost"}
+              className={`w-full justify-start ${
+                isActive ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
+              }`}
+              onClick={() => router.push(item.href)}
+            >
+              <item.icon className="mr-3 h-4 w-4" />
+              <span className="text-sm">{item.label}</span>
+            </Button>
+          )
+        })}
       </nav>
 
       {/* Settings Box */}
       <div className="p-4">
-        <Card className="bg-gray-50 border-gray-200 p-3 space-y-2">
-          <Button variant="ghost" className="w-full justify-start text-gray-600 hover:bg-gray-100 h-8">
+        <Card className="bg-gray-50 border-gray-200 p-3 space-y-2 rounded-xl">
+          <Button variant="ghost"  onClick={() => router.push("/users/profile")} className="w-full justify-start text-gray-600 hover:bg-gray-100 h-8">
             <User className="mr-3 h-4 w-4" />
             <span className="text-sm">Profile</span>
           </Button>
-          <Button variant="ghost" className="w-full justify-start text-gray-600 hover:bg-gray-100 h-8">
+          <Button variant="ghost" onClick={() => router.push("/users/support")} className="w-full justify-start text-gray-600 hover:bg-gray-100 h-8">
             <HelpCircle className="mr-3 h-4 w-4" />
             <span className="text-sm">Help Center</span>
           </Button>
-          <Button variant="ghost" className="w-full justify-start text-gray-600 hover:bg-gray-100 h-8">
+
+          <Button variant="ghost" onClick={() => router.push("/users/settings")} className="w-full justify-start text-gray-600 hover:bg-gray-100 h-8">
             <Settings className="mr-3 h-4 w-4" />
             <span className="text-sm">Settings</span>
           </Button>
