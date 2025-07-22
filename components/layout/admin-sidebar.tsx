@@ -3,7 +3,9 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
+  LockIcon,
   LayoutDashboard,
+  IdCard,
   Building2,
   Users,
   Settings,
@@ -23,6 +25,8 @@ const navigationItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin/dashboard" },
   { icon: Building2, label: "Companies", href: "/admin/companies" },
   { icon: Users, label: "Users", href: "/admin/users" },
+  { icon: IdCard, label: "Roles", href: "/admin/roles" },
+    { icon: LockIcon, label: "Permissions", href: "/admin/permissions" },
   { icon: BarChart3, label: "Analytics", href: "/admin/analytics" },
   { icon: CreditCard, label: "Billing", href: "/admin/billing" },
   { icon: Shield, label: "Security", href: "/admin/security" },
