@@ -25,16 +25,20 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-   // loadDashboardData()
+   loadDashboardData()
          setIsLoading(false)
+         
 
   }, [])
-
+    const getCompanies = () => {
+       // TODO get plans 
+   
+     }
   const loadDashboardData = async () => {
     try {
       const [dashboardStats, companiesData] = await Promise.all([
         adminService.getDashboardStats(),
-        adminService.getCompanies(1, 50),
+        adminService.getCompanies(),
       ])
 
       setStats(dashboardStats)
@@ -45,7 +49,10 @@ export default function AdminDashboard() {
       setIsLoading(false)
     }
   }
+   const getPlans = () => {
+    // TODO get plans 
 
+  }
   const handleInviteCompany = async (data: any) => {
     try {
       setIsLoading(true)

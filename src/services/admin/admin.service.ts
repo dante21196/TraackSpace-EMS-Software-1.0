@@ -51,18 +51,11 @@ class AdminService {
     }
   }
 
-  async getCompanies(page = 1, limit = 20, search?: string): Promise<{ companies: Company[]; total: number }> {
+  async getCompanies(): Promise<{ companies: Company[]; total: number }> {
     try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: limit.toString(),
-      })
 
-      if (search) params.append("search", search)
 
-      const response = await apiClient.get<{ companies: Company[]; total: number }>(
-        `${API_ENDPOINTS.ADMIN.COMPANIES}?${params.toString()}`,
-      )
+      const response = await apiClient.get<{ companies: Company[]; total: number }>(API_ENDPOINTS.ADMIN.COMPANIES)
 
       if (response.success) {
         return response.data
@@ -75,21 +68,7 @@ class AdminService {
     }
   }
 
-  async createCompany(data: CreateCompanyData): Promise<Company> {
-    try {
-      const response = await apiClient.post<Company>(API_ENDPOINTS.ADMIN.CREATE_COMPANY, data)
-
-      if (response.success) {
-        toastService.success("Company created", `${data.name} has been successfully onboarded`)
-        return response.data
-      }
-
-      throw new Error(response.message)
-    } catch (error: any) {
-      toastService.error("Failed to create company", error.message)
-      throw error
-    }
-  }
+  
 
   async inviteCompany(data: CompanyInviteData): Promise<void> {
     try {

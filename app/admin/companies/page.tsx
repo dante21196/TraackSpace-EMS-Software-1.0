@@ -1,6 +1,6 @@
 'use client';
 
-import React from "react";
+import React,{useState} from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -12,6 +12,9 @@ import {
 } from "@/components/ui/table";
 import { AdminSidebar } from "../../../components/layout/admin-sidebar"
 import { Header } from "../../../components/layout/header"
+import { InviteCompanyDialog } from "../../../components/admin/invite-company-dialog"
+import { adminService } from "../../../src/services/admin/admin.service"
+import type { Company } from "../../../src/types/global"
 
 const companiesData = [
   { name: "Acme Corp", industry: "Finance", users: 120 },
@@ -20,6 +23,50 @@ const companiesData = [
 ];
 
 export default function CompaniesPage() {
+
+  const [companies, setCompanies] = useState<Company[]>([])
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  const getCompanies = () => {
+       // TODO get plans 
+   
+     }
+    const getPlans = () => {
+       // TODO get plans 
+   
+     }
+     const handleInviteCompany = async (data: any) => {
+       try {
+         setIsLoading(true)
+        const response =  await adminService.inviteCompany(data)
+          // Refresh companies list
+         // const companiesData = await adminService.getCompanies(1, 50)
+         // setCompanies(companiesData.companies)
+         setIsLoading(false)
+       } catch (error) {
+         console.error("Failed to invite company:", error)
+   
+         setIsLoading(false)
+       }
+     }
+   
+     const handleEditCompany = (company: Company) => {
+       // TODO: Open edit company dialog
+       console.log("Edit company:", company)
+     }
+   
+     const handleDeleteCompany = async (company: Company) => {
+       if (confirm(`Are you sure you want to delete ${company.name}?`)) {
+         try {
+           await adminService.deleteCompany(company.id)
+           setCompanies(companies.filter((c) => c.id !== company.id))
+         } catch (error) {
+           console.error("Failed to delete company:", error)
+         }
+       }
+      }
+  
   return (
     <div className="flex h-screen bg-gray-50">
       <AdminSidebar />
