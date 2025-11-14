@@ -51,17 +51,17 @@ class AdminService {
     }
   }
 
-  async getCompanies(page = 1, limit = 20, search?: string): Promise<{ companies: Company[]; total: number }> {
+  async getCompanies(): Promise<{ companies: Company[]; total: number }> {
     try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: limit.toString(),
-      })
+     // const params = new URLSearchParams({
+     //   page: page.toString(),
+     //   limit: limit.toString(),
+    //  })
 
-      if (search) params.append("search", search)
+    //  if (search) params.append("search", search)
 
       const response = await apiClient.get<{ companies: Company[]; total: number }>(
-        `${API_ENDPOINTS.ADMIN.COMPANIES}?${params.toString()}`,
+        `${API_ENDPOINTS.ADMIN.COMPANIES}`,
       )
 
       if (response.success) {

@@ -34,7 +34,7 @@ export default function AdminDashboard() {
     try {
       const [dashboardStats, companiesData] = await Promise.all([
         adminService.getDashboardStats(),
-        adminService.getCompanies(1, 50),
+        adminService.getCompanies(),
       ])
 
       setStats(dashboardStats)
